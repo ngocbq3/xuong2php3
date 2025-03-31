@@ -36,6 +36,10 @@
             <input type="number" class="form-control" name="price" id="price">
         </div>
         <div class="mb-3">
+            <label for="price" class="form-label">Giảm giá</label>
+            <input type="number" class="form-control" name="sale" id="sale">
+        </div>
+        <div class="mb-3">
             <label for="stock" class="form-label">Số lượng</label>
             <input type="number" class="form-control" name="stock" id="stock">
         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Color;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Size;
 use Illuminate\Http\Request;
 
@@ -38,7 +39,20 @@ class ProductVariantController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        //xử lý ảnh bằng Storage
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('images', $filename, 'public');
+        }
+
+        $data['image'] = $path ?? null;
+
+        ProductVariant::create($data);
+        return redirect()->route('admin.variants.index', $data['product_id'])
+            ->with('message', 'Thêm biến thể thành công.');
     }
 
     /**
@@ -54,7 +68,13 @@ class ProductVariantController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $variant = ProductVariant::findOrFail($id);
+        $colors = Color::all();
+        $sizes = Size::all();
+        return view(
+            'admin.products.variants.edit', 
+            compact('variant', 'colors', 'sizes')
+        );
     }
 
     /**
@@ -62,7 +82,7 @@ class ProductVariantController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
     /**
