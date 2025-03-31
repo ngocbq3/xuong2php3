@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Http\Request;
 
 class ProductVariantController extends Controller
@@ -23,9 +25,12 @@ class ProductVariantController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $colors = Color::all();
+        $sizes = Size::all();
+        return view('admin.products.variants.create', compact('product', 'colors', 'sizes'));
     }
 
     /**
