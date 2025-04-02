@@ -30,4 +30,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class, 'product_id');
     }
+
+    public function getLowestPriceAttribute()
+    {
+        return $this->variants()->min('price');
+    }
 }
