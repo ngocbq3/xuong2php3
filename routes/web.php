@@ -21,6 +21,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/variants/{id}/create', [ProductVariantController::class, 'create'])->name('variants.create');
     Route::post('/variants', [ProductVariantController::class, 'store'])->name('variants.store');
     Route::get('/variants/{id}/edit', [ProductVariantController::class, 'edit'])->name('variants.edit');
-    Route::put('/variants', [ProductVariantController::class, 'update'])->name('variants.update');
+    Route::put('/variants/{id}', [ProductVariantController::class, 'update'])->name('variants.update');
     Route::delete('/variants/{id}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
 });

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductVariantController extends Controller
 {
@@ -72,7 +73,7 @@ class ProductVariantController extends Controller
         $colors = Color::all();
         $sizes = Size::all();
         return view(
-            'admin.products.variants.edit', 
+            'admin.products.variants.edit',
             compact('variant', 'colors', 'sizes')
         );
     }
@@ -82,7 +83,27 @@ class ProductVariantController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
+        $variant = ProductVariant::findOrFail($id);
+        $data = $request->all();
+
+        //xử lý ảnh bằng Storage
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('images', $filename, 'public');
+            $data['image'] = $path;
+        }
+
+        //xóa ảnh cũ
+        if ($variant->image && isset($path)) {
+            if (Storage::fileExists($variant->image)) {
+                Storage::delete($variant->image);
+            }
+        }
+
+        $variant->update($data);
+        return redirect()->route('admin.variants.index', $variant->product_id)
+            ->with('message', 'Cập nhật biến thể thành công.');
     }
 
     /**
@@ -90,6 +111,18 @@ class ProductVariantController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $variant = ProductVariant::findOrFail($id);
+        $productId = $variant->product_id;
+
+        //xóa ảnh cũ
+        if ($variant->image) {
+            if (Storage::fileExists($variant->image)) {
+                Storage::delete($variant->image);
+            }
+        }
+
+        $variant->delete();
+        return redirect()->route('admin.variants.index', $productId)
+            ->with('message', 'Xóa biến thể thành công.');
     }
 }
