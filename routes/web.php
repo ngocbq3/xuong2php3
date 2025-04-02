@@ -24,3 +24,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 //Client
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/detail/{id}', [ProductController::class, 'show'])->name('product.detail');

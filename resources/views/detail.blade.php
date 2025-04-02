@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Chi Tiết Sản Phẩm')
+@section('title', $product->name)
 @section('content')
     <div class="row">
         <div class="col-md-6 mb-4 mb-md-0">
@@ -12,11 +12,15 @@
                 </div>
                 <div class="carousel-inner rounded border">
                     <div class="carousel-item active">
-                        <img src="img/placeholder.jpg" class="d-block w-100 product-detail-img" alt="Ảnh sản phẩm 1">
+                        <img src="{{ Storage::URL($product->image) }}" class="d-block w-100 product-detail-img"
+                            alt="{{ $product->name }}">
                     </div>
-                    <div class="carousel-item">
-                        <img src="img/placeholder.jpg" class="d-block w-100 product-detail-img" alt="Ảnh sản phẩm 2">
-                    </div>
+                    @foreach ($product->variants as $variant)
+                        <div class="carousel-item">
+                            <img src="{{ Storage::URL($variant->image) }}" class="d-block w-100 product-detail-img"
+                                alt="Ảnh sản phẩm 2">
+                        </div>
+                    @endforeach
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel"
                     data-bs-slide="prev">
@@ -30,40 +34,41 @@
                 </button>
             </div>
             <div class="d-flex justify-content-start mt-2">
-                <img src="img/placeholder.jpg" alt="Thumbnail 1" class="img-thumbnail me-2"
+                <img src="{{ Storage::URL($product->image) }}" alt="Thumbnail 1" class="img-thumbnail me-2"
                     style="width: 60px; height: 60px; cursor: pointer;" data-bs-target="#productImageCarousel"
                     data-bs-slide-to="0">
-                <img src="img/placeholder.jpg" alt="Thumbnail 2" class="img-thumbnail me-2"
-                    style="width: 60px; height: 60px; cursor: pointer;" data-bs-target="#productImageCarousel"
-                    data-bs-slide-to="1">
+                @foreach ($product->variants as $variant)
+                    <img src="{{ Storage::URL($variant->image) }}" alt="Thumbnail 2" class="img-thumbnail me-2"
+                        style="width: 60px; height: 60px; cursor: pointer;" data-bs-target="#productImageCarousel"
+                        data-bs-slide-to="1">
+                @endforeach
             </div>
         </div>
 
         <div class="col-md-6">
-            <h1 class="mb-3">Áo Thun Basic Cotton</h1>
-            <p class="fs-3 fw-bold text-danger mb-3">250.000₫</p>
+            <h1 class="mb-3">{{ $product->name }}</h1>
+            <p class="fs-3 fw-bold text-danger mb-3">{{ $product->lowest_price }} $</p>
             <div class="mb-4">
                 <h5>Mô tả sản phẩm</h5>
-                <p>Đây là phần mô tả chi tiết về sản phẩm Áo Thun Basic Cotton. Chất liệu 100% cotton thoáng mát, thấm hút
-                    mồ hôi tốt. Kiểu dáng basic dễ phối đồ, phù hợp mặc hàng ngày, đi chơi, đi làm.</p>
+                <p>{{ $product->description }}</p>
                 <ul>
-                    <li>Chất liệu: 100% Cotton</li>
+                    <li>Chất liệu: {{ $product->metarial }}</li>
                     <li>Xuất xứ: Việt Nam</li>
                     <li>Đặc điểm: Mềm mại, thoáng khí</li>
                 </ul>
+                <h5>Hướng dẫn sử dụng</h5>
+                <p>{{ $product->instrut }}</p>
             </div>
 
             <form>
                 <div class="mb-3">
                     <label for="colorOptions" class="form-label fw-bold">Màu sắc:</label>
                     <div id="colorOptions">
-                        <span class="color-option active" style="background-color: white;" title="Trắng"
-                            data-color="white"></span>
-                        <span class="color-option" style="background-color: black;" title="Đen"
-                            data-color="black"></span>
-                        <span class="color-option" style="background-color: red;" title="Đỏ" data-color="red"></span>
-                        <span class="color-option" style="background-color: blue;" title="Xanh dương"
-                            data-color="blue"></span>
+                        @foreach ($product->variants->unique('color') as $variant)
+                            <span class="color-option " style="background-color: {{ $variant->color->code }};"
+                                title="{{ $variant->color->name }}" data-color="{{ $variant->color->id }}"></span>
+                        @endforeach
+
                     </div>
                     <input type="hidden" name="selected_color" id="selected_color" value="white">
                 </div>
@@ -71,10 +76,11 @@
                 <div class="mb-3">
                     <label for="sizeOptions" class="form-label fw-bold">Kích thước:</label>
                     <div id="sizeOptions">
-                        <span class="size-option active" data-size="S">S</span>
-                        <span class="size-option" data-size="M">M</span>
-                        <span class="size-option" data-size="L">L</span>
-                        <span class="size-option" data-size="XL">XL</span>
+                        @foreach ($product->variants->unique('size') as $variant)
+                            <span class="size-option"
+                                data-size="{{ $variant->size->id }}">{{ $variant->size->name }}</span>
+                        @endforeach
+
                     </div>
                     <input type="hidden" name="selected_size" id="selected_size" value="S">
                 </div>
@@ -137,7 +143,7 @@
             colorOptions.forEach(option => {
                 option.addEventListener('click', function() {
                     colorOptions.forEach(opt => opt.classList.remove(
-                    'active')); // Remove active class from all
+                        'active')); // Remove active class from all
                     this.classList.add('active'); // Add active class to clicked one
                     selectedColorInput.value = this.dataset.color; // Update hidden input
                     console.log('Selected color:', selectedColorInput.value); // For debugging
@@ -150,7 +156,7 @@
             sizeOptions.forEach(option => {
                 option.addEventListener('click', function() {
                     sizeOptions.forEach(opt => opt.classList.remove(
-                    'active')); // Remove active class from all
+                        'active')); // Remove active class from all
                     this.classList.add('active'); // Add active class to clicked one
                     selectedSizeInput.value = this.dataset.size; // Update hidden input
                     console.log('Selected size:', selectedSizeInput.value); // For debugging

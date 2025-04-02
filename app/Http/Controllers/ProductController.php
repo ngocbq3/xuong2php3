@@ -74,4 +74,13 @@ class ProductController extends Controller
         // return $products;
         return view('test2', compact('products'));
     }
+
+    public function show($id)
+    {
+        $product = Product::with(['variants.color', 'variants.size'])
+            ->where('id', $id)
+            ->first();
+
+        return view('detail', compact('product'));
+    }
 }
