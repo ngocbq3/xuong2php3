@@ -47,7 +47,7 @@
 
         <div class="col-md-6">
             <h1 class="mb-3">{{ $product->name }}</h1>
-            <p class="fs-3 fw-bold text-danger mb-3">{{ $product->lowest_price }} $</p>
+            <p class="fs-3 fw-bold text-danger mb-3 price">{{ $product->lowest_price }} $</p>
             <div class="mb-4">
                 <h5>Mô tả sản phẩm</h5>
                 <p>{{ $product->description }}</p>
@@ -70,7 +70,8 @@
                         @endforeach
 
                     </div>
-                    <input type="hidden" name="selected_color" id="selected_color" value="white">
+                    <input type="hidden" name="selected_color" id="selected_color"
+                        value="{{ $product->variants->first()->color->id ?? 'null' }}">
                 </div>
 
                 <div class="mb-3">
@@ -82,7 +83,8 @@
                         @endforeach
 
                     </div>
-                    <input type="hidden" name="selected_size" id="selected_size" value="S">
+                    <input type="hidden" name="selected_size" id="selected_size"
+                        value="{{ $product->variants->first()->size->id ?? 'null' }}">
                 </div>
 
                 <div class="mb-4">
@@ -110,26 +112,18 @@
     <section class="related-products mt-5 pt-5 border-top">
         <h2 class="text-center mb-4">Sản Phẩm Liên Quan</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            <div class="col">
-                <div class="card h-100 shadow-sm product-card">
-                    <img src="img/placeholder.jpg" class="card-img-top" alt="Sản phẩm liên quan 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Quần Short Kaki</h5>
-                        <p class="card-text fw-bold text-danger">320.000₫</p>
-                        <a href="product-detail.html" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+            @foreach ($productRelead as $item)
+                <div class="col">
+                    <div class="card h-100 shadow-sm product-card">
+                        <img src="{{ Storage::URL($item->image) }}" class="card-img-top" alt="Sản phẩm liên quan 2">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $item->name }}</h5>
+                            <p class="card-text fw-bold text-danger">{{ $item->lowest_price }}</p>
+                            <a href="product-detail.html" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 shadow-sm product-card">
-                    <img src="img/placeholder.jpg" class="card-img-top" alt="Sản phẩm liên quan 2">
-                    <div class="card-body">
-                        <h5 class="card-title">Áo Polo Nam</h5>
-                        <p class="card-text fw-bold text-danger">290.000₫</p>
-                        <a href="product-detail.html" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </section>
 
@@ -146,6 +140,7 @@
                         'active')); // Remove active class from all
                     this.classList.add('active'); // Add active class to clicked one
                     selectedColorInput.value = this.dataset.color; // Update hidden input
+                    selectedColorInput.dispatchEvent(new Event('change')); // Trigger change event
                     console.log('Selected color:', selectedColorInput.value); // For debugging
                 });
             });
@@ -159,6 +154,7 @@
                         'active')); // Remove active class from all
                     this.classList.add('active'); // Add active class to clicked one
                     selectedSizeInput.value = this.dataset.size; // Update hidden input
+                    selectedSizeInput.dispatchEvent(new Event('change')); // Trigger change event
                     console.log('Selected size:', selectedSizeInput.value); // For debugging
                 });
             });
@@ -173,6 +169,59 @@
                         new bootstrap.Carousel(carouselElement);
                     carouselInstance.to(parseInt(slideIndex));
                 });
+            });
+
+            function updatePrice() {
+                const selectedColor = selectedColorInput.value;
+                const selectedSize = selectedSizeInput.value;
+
+                if (selectedColor === 'null' || selectedSize === 'null') {
+                    alert('Sản phẩm này hiện không có biến thể khả dụng.');
+                    return;
+                }
+                console.log(
+                    `/get-variant/price?product_id={{ $product->id }}&color_id=${selectedColor}&size_id=${selectedSize}`
+                )
+                fetch(
+                        `/get-variant/price?product_id={{ $product->id }}&color_id=${selectedColor}&size_id=${selectedSize}`
+                    )
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response data:', data); // Kiểm tra xem dữ liệu có đúng không
+                        // Phần tử chứ giá
+                        const priceElement = document.querySelector('.price');
+                        if (data.price) {
+                            priceElement.textContent = data.price + ' $';
+
+                            const quantityInput = document.getElementById('quantityInput');
+                            //Cập nhật số lượng tối đa
+                            quantityInput.max = data.stock;
+                            if (quantityInput.value > data.stock) {
+                                // Nếu số lượng hiện tại lớn hơn số lượng tối đa, cập nhật lại giá trị
+                                quantityInput.value = data.stock;
+                            }
+
+                            console.log('Cập nhật giá:', data.price, 'Số lượng kho hiện tại:', data.stock);
+                        } else {
+                            console.error('Không lấy được giá:', data.message);
+                            priceElement.textContent = "Liên hệ";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            // Sự kiện khi thay đổi màu sắc hoặc kích thước
+            // Cập nhật giá và số lượng tối đa
+            selectedColorInput.addEventListener('change', updatePrice);
+            selectedSizeInput.addEventListener('change', updatePrice);
+
+            quantityInput.addEventListener('input', function() {
+                if (parseInt(this.value) > parseInt(this.max)) {
+                    alert('Số lượng vượt quá tồn kho. Vui lòng chọn số lượng nhỏ hơn.');
+                    this.value = this.max;
+                }
             });
         });
     </script>
