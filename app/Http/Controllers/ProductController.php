@@ -113,7 +113,7 @@ class ProductController extends Controller
         if (!$variant) {
             return response()->json([
                 'error' => 'Variant not found',
-                'price' => 'Liên hệ'
+                // 'price' => 'Liên hệ'
             ], 404);
         }
         //Lấy giá của sản phẩm

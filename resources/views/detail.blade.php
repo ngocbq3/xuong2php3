@@ -47,7 +47,7 @@
 
         <div class="col-md-6">
             <h1 class="mb-3">{{ $product->name }}</h1>
-            <p class="fs-3 fw-bold text-danger mb-3 price">{{ $product->lowest_price }} $</p>
+            <p class="fs-3 fw-bold text-danger mb-3 price">{{ $product->lowest_price . ' $' }}</p>
             <div class="mb-4">
                 <h5>Mô tả sản phẩm</h5>
                 <p>{{ $product->description }}</p>
@@ -60,7 +60,11 @@
                 <p>{{ $product->instrut }}</p>
             </div>
 
-            <form>
+            <form action="" method="POST" id="addToCartForm">
+                @csrf
+                <div class="mb-3">
+                    <span id="stock">Số lượng: {{ $product->variants->first()->stock }}</span>
+                </div>
                 <div class="mb-3">
                     <label for="colorOptions" class="form-label fw-bold">Màu sắc:</label>
                     <div id="colorOptions">
@@ -89,11 +93,15 @@
 
                 <div class="mb-4">
                     <label for="quantityInput" class="form-label fw-bold">Số lượng:</label>
-                    <input type="number" class="form-control" id="quantityInput" value="1" min="1"
+                    <input type="number" class="form-control" id="quantityInput" value="1" min="1" name="quantity"
                         max="10" style="width: 100px;">
                 </div>
+                <!--Hidden variant id-->
+                <input type="hidden" name="variant_id" id="variant_id"
+                    value="{{ $product->variants->first()->id ?? 'null' }}">
 
-                <button type="submit" class="btn btn-primary btn-lg w-100"><i class="bi bi-cart-plus-fill me-2"></i>
+                <button type="submit" class="btn btn-primary btn-lg w-100" id="addToCart"><i
+                        class="bi bi-cart-plus-fill me-2"></i>
                     Thêm vào giỏ hàng</button>
             </form>
 
@@ -171,6 +179,13 @@
                 });
             });
 
+            // Add to cart button
+            const addToCartButton = document.getElementById('addToCart');
+            //Lấy phần tử có id=variant_id
+            const variantIdInput = document.getElementById('variant_id');
+            //Lấy phần tử có id=stock
+            const stockElement = document.getElementById('stock');
+
             function updatePrice() {
                 const selectedColor = selectedColorInput.value;
                 const selectedSize = selectedSizeInput.value;
@@ -188,7 +203,7 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log('Response data:', data); // Kiểm tra xem dữ liệu có đúng không
-                        // Phần tử chứ giá
+                        // Phần tử chứa giá
                         const priceElement = document.querySelector('.price');
                         if (data.price) {
                             priceElement.textContent = data.price + ' $';
@@ -200,11 +215,20 @@
                                 // Nếu số lượng hiện tại lớn hơn số lượng tối đa, cập nhật lại giá trị
                                 quantityInput.value = data.stock;
                             }
-
+                            //Hiển thị nút thêm giỏ hàng
+                            addToCartButton.style.display = 'block';
+                            //Cập nhật variant id
+                            variantIdInput.value = data.id;
+                            //Cập nhật số lượng kho
+                            stockElement.textContent = 'Số lượng: ' + data.stock;
                             console.log('Cập nhật giá:', data.price, 'Số lượng kho hiện tại:', data.stock);
                         } else {
                             console.error('Không lấy được giá:', data.message);
                             priceElement.textContent = "Liên hệ";
+                            //Ẩn nút thêm vào giỏ hàng
+                            addToCartButton.style.display = 'none';
+                            //Cập nhật số lượng kho
+                            stockElement.textContent = 'Hết hàng';
                         }
                     })
                     .catch(error => {
