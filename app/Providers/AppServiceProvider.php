@@ -21,5 +21,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        view()->composer('*', function ($view) {
+            $cart = session()->get('cart', []);
+            $count = collect($cart)->count('quantity');
+            $view->with('count_cart', $count);
+        });
     }
 }

@@ -1,6 +1,12 @@
 @extends('layouts.app')
 @section('title', $product->name)
 @section('content')
+    @session('success')
+        <div class="alert alert-success fade show" role="alert">
+            <strong>Thành công!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endsession
     <div class="row">
         <div class="col-md-6 mb-4 mb-md-0">
             <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -60,7 +66,7 @@
                 <p>{{ $product->instrut }}</p>
             </div>
 
-            <form action="" method="POST" id="addToCartForm">
+            <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
                 @csrf
                 <div class="mb-3">
                     <span id="stock">Số lượng: {{ $product->variants->first()->stock }}</span>
@@ -93,8 +99,8 @@
 
                 <div class="mb-4">
                     <label for="quantityInput" class="form-label fw-bold">Số lượng:</label>
-                    <input type="number" class="form-control" id="quantityInput" value="1" min="1" name="quantity"
-                        max="10" style="width: 100px;">
+                    <input type="number" class="form-control" id="quantityInput" value="1" min="1"
+                        name="quantity" max="10" style="width: 100px;">
                 </div>
                 <!--Hidden variant id-->
                 <input type="hidden" name="variant_id" id="variant_id"

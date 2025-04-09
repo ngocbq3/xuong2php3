@@ -32,7 +32,20 @@ class CartController extends Controller
         }
         //Gán lại giỏ hàng vào session
         session()->put('cart', $cart);
+
         //Trả về thông báo thành công
-        return redirect()->back()->with('success', 'Thêm sản phẩm vào giỏ hàng thànhf công!');
+        return redirect()->back()->with('success', 'Thêm sản phẩm vào giỏ hàng thành công!');
+    }
+
+    //Hiển thị giỏ hàng
+    public function show()
+    {
+        $cart = session()->get('cart', []);
+        $totalPrice = 0;
+        foreach ($cart as $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+        // dd($cart);
+        return view('carts.show', compact('cart', 'totalPrice'));
     }
 }

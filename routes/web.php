@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -27,3 +28,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/detail/{id}', [ProductController::class, 'show'])->name('product.detail');
 
 Route::get('/get-variant/price', [ProductController::class, 'getAttributePrice'])->name('product.get-variant-price');
+
+//Thêm sản phẩm vào giỏ hàng
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+//hiển thị giỏ hàng
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');

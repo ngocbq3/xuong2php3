@@ -46,3 +46,8 @@
     color: white;
     border-color: black;
 }
+.cart-table th,
+.cart-table td {
+    vertical-align: middle;
+    text-align: center;
+}

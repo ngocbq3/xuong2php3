@@ -35,7 +35,7 @@
                         <a class="nav-link" href="#">Liên Hệ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-cart"></i> Giỏ hàng</a>
+                        <a class="nav-link" href="{{ route('cart.show') }}"><i class="bi bi-cart">{{ $count_cart }}</i> Giỏ hàng</a>
                     </li>
                 </ul>
             </div>
