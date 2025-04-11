@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/test', [ProductController::class, 'index']);
 
@@ -29,7 +30,26 @@ Route::get('/detail/{id}', [ProductController::class, 'show'])->name('product.de
 
 Route::get('/get-variant/price', [ProductController::class, 'getAttributePrice'])->name('product.get-variant-price');
 
-//Thêm sản phẩm vào giỏ hàng
-Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
-//hiển thị giỏ hàng
-Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+
+
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Thêm sản phẩm vào giỏ hàng
+    Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+    //hiển thị giỏ hàng
+    Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+});
+
+require __DIR__ . '/auth.php';

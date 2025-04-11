@@ -34,11 +34,9 @@
                         </tr>
                     @endforeach
 
-
-
                     <!-- Tổng cộng -->
                     <tr class="table-secondary">
-                        <td colspan="5" class="text-end"><strong>Tổng cộng:</strong></td>
+                        <td colspan="6" class="text-end"><strong>Tổng cộng:</strong></td>
                         <td><strong>{{ $totalPrice }} đ</strong></td>
                     </tr>
                 </tbody>

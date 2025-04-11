@@ -69,7 +69,7 @@
             <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
                 @csrf
                 <div class="mb-3">
-                    <span id="stock">Số lượng: {{ $product->variants->first()->stock }}</span>
+                    <span id="stock">Số lượng: {{ $product->variants->first()->stock ?? 0 }}</span>
                 </div>
                 <div class="mb-3">
                     <label for="colorOptions" class="form-label fw-bold">Màu sắc:</label>
@@ -191,6 +191,8 @@
             const variantIdInput = document.getElementById('variant_id');
             //Lấy phần tử có id=stock
             const stockElement = document.getElementById('stock');
+            //Ẩn nút thêm vào giỏ hàng
+            addToCartButton.style.display = 'none';
 
             function updatePrice() {
                 const selectedColor = selectedColorInput.value;

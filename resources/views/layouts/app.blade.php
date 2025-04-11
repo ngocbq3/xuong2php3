@@ -35,8 +35,29 @@
                         <a class="nav-link" href="#">Liên Hệ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('cart.show') }}"><i class="bi bi-cart">{{ $count_cart }}</i> Giỏ hàng</a>
+                        <a class="nav-link" href="{{ route('cart.show') }}"><i
+                                class="bi bi-cart">{{ $count_cart }}</i> Giỏ hàng</a>
                     </li>
+                    <!-- Đăng nhập đăng ký tài khoản-->
+                    @if (Auth::check())
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('profile.edit') }}">Xin chào,
+                                {{ Auth::user()->name }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-link nav-link">Đăng xuất</button>
+                            </form>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">Đăng Nhập</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">Đăng Ký</a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>

@@ -51,3 +51,16 @@
     vertical-align: middle;
     text-align: center;
 }
+.cart-summary {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.cart-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+.cart-item:last-child {
+    border-bottom: none;
+}
