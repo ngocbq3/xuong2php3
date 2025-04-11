@@ -34,7 +34,7 @@ class OrderController extends Controller
         $order = Order::with('user')
             ->where('id', $id)
             ->first();
-
+        // return $order_details;
         $statuses = $this->statuses;
         return view('admin.orders.show', compact('order', 'statuses', 'order_details'));
     }

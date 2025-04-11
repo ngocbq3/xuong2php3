@@ -8,21 +8,21 @@
     <div class="container my-5">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Hóa Đơn #HD12345</h4>
-                <small>Ngày đặt: 10/04/2025</small>
+                <h4 class="mb-0">Hóa Đơn #{{ $order->id }}</h4>
+                <small>Ngày đặt: {{ $order->created_at }}</small>
             </div>
             <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h5>Thông tin khách hàng</h5>
-                        <p class="mb-1"><strong>Họ tên:</strong> Nguyễn Văn A</p>
-                        <p class="mb-1"><strong>Email:</strong> nguyenvana@example.com</p>
-                        <p class="mb-1"><strong>Điện thoại:</strong> 0901234567</p>
-                        <p class="mb-0"><strong>Địa chỉ:</strong> 123 Đường ABC, Quận 1, TP.HCM</p>
+                        <p class="mb-1"><strong>Họ tên:</strong> {{ $order->user->name }}</p>
+                        <p class="mb-1"><strong>Email:</strong> {{ $order->email }}</p>
+                        <p class="mb-1"><strong>Điện thoại:</strong> {{ $order->phone }}</p>
+                        <p class="mb-0"><strong>Địa chỉ:</strong> {{ $order->address }}</p>
                     </div>
                     <div class="col-md-6 text-md-end">
                         <h5>Trạng thái đơn hàng</h5>
-                        <span class="badge bg-success fs-6">Đã thanh toán</span>
+                        <span class="badge bg-success fs-6">{{ $statuses[$order->status] }}</span>
                     </div>
                 </div>
 
@@ -41,24 +41,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><img src="https://via.placeholder.com/60" alt="Áo thun" class="img-thumbnail"></td>
-                                <td>Áo thun nam basic</td>
-                                <td>Trắng</td>
-                                <td>L</td>
-                                <td>2</td>
-                                <td>200,000₫</td>
-                                <td>400,000₫</td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://via.placeholder.com/60" alt="Quần jean" class="img-thumbnail"></td>
-                                <td>Quần jean nữ</td>
-                                <td>Xanh</td>
-                                <td>M</td>
-                                <td>1</td>
-                                <td>350,000₫</td>
-                                <td>350,000₫</td>
-                            </tr>
+                            @foreach ($order_details as $item)
+                                <tr>
+                                    <td><img src="{{ Storage::URL($item->product->image) }}" width="90">
+                                    </td>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>{{ $item->color->name }}</td>
+                                    <td>{{ $item->size->name }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                    <td>{{ number_format($item->price, 2, ',') }}₫</td>
+                                    <td>{{ number_format($item->price * $item->quantity, 2, '.') }}₫</td>
+                                </tr>
+                            @endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -68,7 +63,7 @@
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Tạm tính:</span>
-                                <strong>750,000₫</strong>
+                                <strong>{{ number_format($order->total, 2, ',') }}₫</strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Phí vận chuyển:</span>
@@ -76,11 +71,11 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Tổng cộng:</span>
-                                <strong class="text-danger fs-5">780,000₫</strong>
+                                <strong class="text-danger fs-5">{{ number_format($order->pay_amount, 2, ',') }}₫</strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Phương thức thanh toán:</span>
-                                <strong>Chuyển khoản</strong>
+                                <strong>{{ $order->payment }}</strong>
                             </li>
                         </ul>
                     </div>
@@ -88,7 +83,7 @@
 
                 <div class="mt-4">
                     <h6>Ghi chú:</h6>
-                    <p>Vui lòng giao hàng trong giờ hành chính.</p>
+                    <p>{{ $order->note }}</p>
                 </div>
             </div>
         </div>
