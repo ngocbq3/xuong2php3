@@ -16,4 +16,24 @@ class OrderDetail extends Model
         'price',
         'quantity',
     ];
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+    public function productVariant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
+    public function product()
+    {
+        return $this->hasOneThrough(Product::class, ProductVariant::class, 'id', 'id', 'product_variant_id', 'product_id');
+    }
+    public function size()
+    {
+        return $this->hasOneThrough(Size::class, ProductVariant::class, 'id', 'id', 'product_variant_id', 'size_id');
+    }
+    public function color()
+    {
+        return $this->hasOneThrough(Color::class, ProductVariant::class, 'id', 'id', 'product_variant_id', 'color_id');
+    }
 }

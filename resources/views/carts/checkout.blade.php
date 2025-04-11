@@ -7,18 +7,20 @@
             <!-- Form thanh toán -->
             <div class="col-md-7">
                 <h3 class="mb-4">Thông tin thanh toán</h3>
-                <form action="/thanh-toan" method="POST">
+                <form action="{{ route('cart.checkout.post') }}" method="POST">
                     <!-- CSRF nếu dùng Laravel -->
                     <!-- <input type="hidden" name="_token" value="{{ csrf_token() }}"> -->
                     @csrf
                     <div class="mb-3">
                         <label for="full_name" class="form-label">Họ và tên</label>
-                        <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        <input type="text" class="form-control" id="name" name="name"
+                            value="{{ Auth::user()->name }}" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email"
+                            value="{{ Auth::user()->email }}" required>
                     </div>
 
                     <div class="mb-3">
@@ -39,13 +41,12 @@
                     <div class="mb-3">
                         <label class="form-label d-block">Phương thức thanh toán</label>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="payment_method" id="cod"
-                                value="cod" checked>
+                            <input class="form-check-input" type="radio" name="payment" id="cod" value="cod"
+                                checked>
                             <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="payment_method" id="bank"
-                                value="bank">
+                            <input class="form-check-input" type="radio" name="payment" id="bank" value="bank">
                             <label class="form-check-label" for="bank">Chuyển khoản ngân hàng</label>
                         </div>
                     </div>
@@ -61,36 +62,29 @@
                 <h4 class="mb-3">Đơn hàng của bạn</h4>
                 <div class="cart-summary">
                     <!-- Sản phẩm -->
-                    <div class="cart-item">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong>Áo Thun Nam</strong><br>
-                                <small>Màu: <span class="badge bg-primary">Xanh</span>, Size: M</small><br>
-                                <small>Số lượng: 2</small>
-                            </div>
-                            <div class="text-end">
-                                <strong>400.000đ</strong>
-                            </div>
-                        </div>
-                    </div>
+                    @foreach ($cart as $item)
+                        <div class="cart-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ $item['name'] }}</strong><br>
+                                    <small>Màu: <span class="badge bg-primary">{{ $item['color'] }}</span>, Size:
+                                        {{ $item['size'] }}</small><br>
+                                    <small>Số lượng: {{ $item['quantity'] }}</small>,
+                                    <small>Đơn giá: {{ number_format($item['price'], 2, ',') }}đ</small>
+                                </div>
+                                <div class="text-end">
 
-                    <div class="cart-item">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong>Quần Jean</strong><br>
-                                <small>Màu: <span class="badge bg-dark">Đen</span>, Size: L</small><br>
-                                <small>Số lượng: 1</small>
-                            </div>
-                            <div class="text-end">
-                                <strong>600.000đ</strong>
+                                    <strong>Thành tiền:
+                                        {{ number_format($item['price'] * $item['quantity'], 2, ',') }}đ</strong>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endforeach
 
                     <!-- Tổng cộng -->
                     <div class="d-flex justify-content-between mt-3 border-top pt-3">
                         <strong>Tổng cộng:</strong>
-                        <strong>1.000.000đ</strong>
+                        <strong>{{ number_format($totalPrice, 2, ',') }}đ</strong>
                     </div>
                 </div>
             </div>

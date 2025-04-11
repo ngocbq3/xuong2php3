@@ -47,7 +47,9 @@
             <a href="/san-pham" class="btn btn-outline-secondary">Tiếp tục mua hàng</a>
             <div>
                 <button type="submit" class="btn btn-primary">Cập nhật số lượng</button>
-                <button type="submit" formaction="/thanh-toan" class="btn btn-success ms-2">Thanh toán</button>
+                <!-- thanh toán -->
+                <a href="{{ route('cart.checkout') }}" class="btn btn-success">Thanh toán</a>
+
             </div>
         </div>
     </div>
